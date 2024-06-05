@@ -1,16 +1,15 @@
 import logging
 from flask import Flask
 from flask_wtf.csrf import CSRFProtect
-from src.routes import main_routes  # Importación correcta
-from src.config import Config  # Importar configuración
+from src.routes import main_routes
+from src.config import Config
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(Config)  # Cargar configuración desde config.py
+    app.config.from_object(Config)
     csrf = CSRFProtect(app)
     app.register_blueprint(main_routes)
     
-    # Configurar logging
     logging.basicConfig(level=logging.INFO)
     
     return app
