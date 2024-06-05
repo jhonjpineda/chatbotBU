@@ -1,0 +1,6 @@
+Flask==2.0.1
+Flask-WTF==0.15.1
+pdfplumber
+openai
+waitress
+python-dotenv
