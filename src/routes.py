@@ -3,7 +3,7 @@ import logging
 from flask import Blueprint, render_template, request, jsonify
 import openai
 import os
-from .pdf_processor import extract_text_from_pdf
+from .pdf_processor import extract_texts_from_all_pdfs
 from .config import Config
 
 main_routes = Blueprint('main', __name__)
@@ -21,9 +21,9 @@ def generate_response(prompt):
     )
     return response['choices'][0]['message']['content'].strip()
 
-base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-pdf_path = os.path.join(base_dir, 'data', 'knowledge_base.pdf')
-knowledge_base = extract_text_from_pdf(pdf_path)
+# Actualizar la ruta de los PDFs a la carpeta "documents"
+documents_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'documents')
+knowledge_base = extract_texts_from_all_pdfs(documents_dir)
 
 @main_routes.route('/')
 def home():
@@ -40,7 +40,8 @@ def ask():
     return jsonify({'response': response})
 
 def is_valid_input(user_input):
-    return bool(re.match("^[\w\s,.\?!áéíóúÁÉÍÓÚñÑ]*$", user_input))
+    # Ajustar la expresión regular para permitir signos de interrogación al inicio
+    return bool(re.match("^[\w\s,.\?!¿¡áéíóúÁÉÍÓÚñÑ]*$", user_input))
 
 @main_routes.errorhandler(Exception)
 def handle_exception(e):

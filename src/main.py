@@ -1,8 +1,12 @@
 import os
-from pdf_processor import extract_text_from_pdf
+from dotenv import load_dotenv
+from src.pdf_processor import extract_texts_from_all_pdfs
 import openai
 
-openai.api_key = 'sk-proj-KLGKEZokVfMnZsQupmVDT3BlbkFJWLs3EgPBM3qsqEOVgixX'
+# Cargar variables de entorno desde el archivo .env
+load_dotenv()
+
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
 def generate_response(prompt):
     response = openai.ChatCompletion.create(
@@ -16,10 +20,12 @@ def generate_response(prompt):
 
 if __name__ == "__main__":
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    pdf_path = os.path.join(base_dir, 'data', 'knowledge_base.pdf')
+    documents_dir = os.path.join(base_dir, 'documents')
     
     try:
-        knowledge_base = extract_text_from_pdf(pdf_path)
+        if not os.path.exists(documents_dir):
+            raise FileNotFoundError
+        knowledge_base = extract_texts_from_all_pdfs(documents_dir)
         print("Knowledge base loaded. You can start asking questions.")
         
         while True:
@@ -29,6 +35,6 @@ if __name__ == "__main__":
             print(f"AI: {response}")
     
     except FileNotFoundError:
-        print(f"Error: The file at path {pdf_path} was not found.")
+        print(f"Error: The directory at path {documents_dir} was not found.")
     except Exception as e:
         print(f"An error occurred: {e}")
